@@ -21,6 +21,10 @@ header p {
   margin: 5px 0 0;
 }
 
+header a {
+  color: white;
+}
+
 main {
   max-width: 1100px;
   margin: 0 auto;
@@ -84,6 +88,35 @@ button {
 
 #detalhes img {
   max-width: 200px;
+}
+
+/* tabela dos logs (parte 2) */
+.tabela {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+th,
+td {
+  border: 1px solid #ccc;
+  padding: 6px 8px;
+  text-align: left;
+  font-size: 14px;
+}
+
+th {
+  background: #ddd;
+}
+
+td button {
+  padding: 4px 8px;
+  font-size: 13px;
+  width: auto;
 }
 
 footer {

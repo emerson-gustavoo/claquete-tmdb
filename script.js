@@ -1,11 +1,16 @@
 // chave da api do tmdb, peguei em themoviedb.org > configuracoes > api
 const API_KEY = "96a78147b87de7c24707134c49346172";
 
+// minha matricula, a api de logs do professor usa ela pra separar os logs de cada aluno
+const MATRICULA = "390832";
+
 const URL_API = "https://api.themoviedb.org/3";
 const URL_IMAGEM = "https://image.tmdb.org/t/p/w300";
+const URL_LOGS = "https://www.piway.com.br/unoesc/api";
 
-// id do filme que ta aberto nos detalhes (uso no POST e no DELETE)
+// id e nome do filme que ta aberto nos detalhes (uso no POST, no DELETE e nos logs)
 let filmeAtual = null;
+let tituloAtual = "";
 
 // sessao de convidado do tmdb, precisa dela pra dar nota sem fazer login
 let sessaoId = null;
@@ -65,6 +70,7 @@ async function carregarPopulares() {
   try {
     const dados = await buscarApi("/discover/movie");
     mostrarFilmes(dados.results);
+    registrarLog("Filmes populares", dados.results.length + " filmes");
   } catch (erro) {
     mostrarErro();
   }
@@ -96,6 +102,7 @@ async function filtrar(evento) {
   try {
     const dados = await buscarApi("/discover/movie", parametros);
     mostrarFilmes(dados.results);
+    registrarLog("Filtrar filmes", dados.results.length + " filmes");
   } catch (erro) {
     mostrarErro();
   }
@@ -116,6 +123,7 @@ async function buscar(evento) {
     // encodeURIComponent pra nao dar problema com espaco e acento
     const dados = await buscarApi("/search/movie", "&query=" + encodeURIComponent(texto));
     mostrarFilmes(dados.results);
+    registrarLog("Buscar filme", dados.results.length + " filmes para " + texto);
   } catch (erro) {
     mostrarErro();
   }
@@ -127,6 +135,8 @@ async function abrirDetalhes(id) {
   try {
     const filme = await buscarApi("/movie/" + id);
     filmeAtual = filme.id;
+    tituloAtual = filme.title;
+    registrarLog("Detalhes do filme", filme.title);
 
     let imagem = "";
     if (filme.poster_path) {
@@ -167,6 +177,7 @@ async function pegarSessao() {
   if (sessaoId == null) {
     const dados = await buscarApi("/authentication/guest_session/new");
     sessaoId = dados.guest_session_id;
+    registrarLog("Criar sessao", "sessao criada");
   }
   return sessaoId;
 }
@@ -187,8 +198,10 @@ async function enviarNota() {
     });
 
     if (resposta.ok) {
+      registrarLog("Enviar nota POST", "nota " + nota + " para " + tituloAtual);
       mensagem.textContent = "Nota " + nota + " enviada!";
     } else {
+      registrarLog("Enviar nota POST", "erro " + resposta.status);
       mensagem.textContent = "Erro ao enviar a nota.";
     }
   } catch (erro) {
@@ -207,13 +220,104 @@ async function removerNota() {
     const resposta = await fetch(url, { method: "DELETE" });
 
     if (resposta.ok) {
+      registrarLog("Remover nota DELETE", "nota removida de " + tituloAtual);
       mensagem.textContent = "Nota removida!";
     } else {
       // da erro se o filme nao tinha nota nessa sessao
+      registrarLog("Remover nota DELETE", "erro " + resposta.status);
       mensagem.textContent = "Esse filme não tem nota sua para remover.";
     }
   } catch (erro) {
     mensagem.textContent = "Erro ao remover a nota.";
+  }
+}
+
+
+// =============== LOGS===============
+
+// INSERIR log
+// chamo essa funcao depois de cada requisicao pro tmdb, ja com a resposta em maos
+async function registrarLog(metodo, resultado) {
+  const resultadoLimpo = String(resultado)
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replaceAll("/", "-")
+    .slice(0, 100);
+
+  const url = URL_LOGS + "/inserir/log/" + MATRICULA + "/TMDB/"
+    + encodeURIComponent(metodo) + "/" + encodeURIComponent(resultadoLimpo);
+
+  try {
+    await fetch(url);
+    carregarLogs(); // atualiza a tabela pra ja aparecer o log novo
+  } catch (erro) {
+    console.log("nao consegui gravar o log", erro);
+  }
+}
+
+// a api manda a data assim: 2026-10-20 19:32:15, aqui viro pra 20/10/2026 19:32:15
+function formatarDataLog(texto) {
+  const partes = texto.split(" ");
+  return partes[0].split("-").reverse().join("/") + " " + partes[1];
+}
+
+// EXIBIR logs
+// busca todos os logs da minha matricula e monta a tabela (com repeticao)
+async function carregarLogs() {
+  const tabela = document.getElementById("tabela-logs");
+  const mensagem = document.getElementById("msg-logs");
+
+  try {
+    const resposta = await fetch(URL_LOGS + "/logs/" + MATRICULA);
+    const texto = await resposta.text();
+
+    // se a matricula estiver errada a api manda uma mensagem em vez da lista
+    let logs = null;
+    try {
+      logs = JSON.parse(texto);
+    } catch (erro) {}
+
+    if (!Array.isArray(logs)) {
+      mensagem.textContent = texto;
+      tabela.innerHTML = "";
+      return;
+    }
+
+    if (logs.length == 0) {
+      mensagem.textContent = "Nenhum log registrado ainda.";
+      tabela.innerHTML = "";
+      return;
+    }
+
+    mensagem.textContent = logs.length + " logs registrados.";
+    tabela.innerHTML = "";
+
+      for (const log of logs.reverse()) {
+      tabela.innerHTML += `
+        <tr>
+          <td>${formatarDataLog(log.log)}</td>
+          <td>${log.api}</td>
+          <td>${log.metodo}</td>
+          <td>${log.resultado}</td>
+          <td><button onclick="excluirLog(${log.idlog})">Excluir</button></td>
+        </tr>
+      `;
+    }
+  } catch (erro) {
+    mensagem.textContent = "Erro ao carregar os logs.";
+  }
+}
+
+// EXCLUIR log pelo id
+async function excluirLog(id) {
+  if (!confirm("Quer mesmo excluir esse log?")) {
+    return;
+  }
+
+  try {
+    await fetch(URL_LOGS + "/excluir/log/" + id + "/aluno/" + MATRICULA);
+    carregarLogs(); // recarrega a tabela sem o log excluido
+  } catch (erro) {
+    alert("Erro ao excluir o log.");
   }
 }
 
@@ -237,5 +341,8 @@ document.getElementById("fechar").addEventListener("click", function () {
 document.getElementById("btn-enviar-nota").addEventListener("click", enviarNota);
 document.getElementById("btn-remover-nota").addEventListener("click", removerNota);
 
-// quando abre o site ja carrega os filmes populares
+document.getElementById("btn-atualizar-logs").addEventListener("click", carregarLogs);
+
+// quando abre o site ja carrega os filmes populares e os logs
 carregarPopulares();
+carregarLogs();

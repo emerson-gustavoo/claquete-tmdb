@@ -12,6 +12,7 @@
   <header>
     <h1>Claquete</h1>
     <p>Site de filmes usando a API do TMDB</p>
+    <a href="#logs">Ver logs</a>
   </header>
 
   <main>
@@ -73,6 +74,30 @@
     <section>
       <h2 id="titulo-lista">Filmes populares</h2>
       <div id="lista" class="lista"></div>
+    </section>
+
+    <!-- PARTE 2: lista dos logs que ficam gravados na api do professor
+         as linhas da tabela o javascript preenche (com repeticao) -->
+    <section id="logs">
+      <h2>Logs de uso da API</h2>
+      <button id="btn-atualizar-logs">Atualizar logs</button>
+      <p id="msg-logs"></p>
+
+      <!-- essa div eh pra tabela rolar pro lado no celular -->
+      <div class="tabela">
+        <table>
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>API</th>
+              <th>Método</th>
+              <th>Resultado</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="tabela-logs"></tbody>
+        </table>
+      </div>
     </section>
 
   </main>
