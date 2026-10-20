@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <!-- isso aqui eh pra ficar responsivo no celular -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claquete - Filmes</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <h1>Claquete</h1>
+    <p>Site de filmes usando a API do TMDB</p>
+  </header>
+
+  <main>
+
+    <!-- detalhes de um filme so (sem repeticao)
+         fica escondido ate clicar em algum filme da lista -->
+    <section id="detalhes" hidden>
+      <button id="fechar">Fechar</button>
+      <div id="detalhes-conteudo"></div>
+
+      <!-- aqui da pra dar nota (POST) e tirar a nota (DELETE) -->
+      <h3>Dar nota para o filme</h3>
+      <select id="nota">
+        <option value="10">10</option>
+        <option value="9">9</option>
+        <option value="8">8</option>
+        <option value="7">7</option>
+        <option value="6">6</option>
+        <option value="5">5</option>
+        <option value="4">4</option>
+        <option value="3">3</option>
+        <option value="2">2</option>
+        <option value="1">1</option>
+      </select>
+      <button id="btn-enviar-nota">Enviar nota</button>
+      <button id="btn-remover-nota">Remover nota</button>
+      <p id="msg-nota"></p>
+    </section>
+
+    <section>
+      <h2>Pesquisar</h2>
+
+      <!-- busca pelo nome do filme -->
+      <form id="form-busca">
+        <input type="text" id="busca" placeholder="Nome do filme">
+        <button type="submit">Buscar</button>
+      </form>
+
+      <!-- filtro por genero e ano
+           os ids dos generos eu peguei da propria api (/genre/movie/list) -->
+      <form id="form-filtro">
+        <select id="genero">
+          <option value="">Todos os gêneros</option>
+          <option value="28">Ação</option>
+          <option value="16">Animação</option>
+          <option value="35">Comédia</option>
+          <option value="18">Drama</option>
+          <option value="878">Ficção científica</option>
+          <option value="10749">Romance</option>
+          <option value="27">Terror</option>
+        </select>
+        <input type="number" id="ano" placeholder="Ano" min="1900" max="2026">
+        <button type="submit">Filtrar</button>
+        <button type="button" id="limpar">Limpar filtros</button>
+      </form>
+    </section>
+
+    <!-- lista de filmes (com repeticao), o javascript preenche -->
+    <section>
+      <h2 id="titulo-lista">Filmes populares</h2>
+      <div id="lista" class="lista"></div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>Emerson Gustavo SOBRENOME</p>
+    <p>Fundamentos ao Desenvolvimento Web - Sistemas de Informação - Unoesc - 2026/2</p>
+    <p>Professor: Rafaeli Pinheiro</p>
+    <p>Dados fornecidos pelo The Movie Database (TMDB)</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

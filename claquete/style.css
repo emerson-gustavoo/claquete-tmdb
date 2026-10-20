@@ -1,0 +1,111 @@
+/* estilo bem basico, so pra ficar organizado */
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: #f2f2f2;
+  color: #222;
+}
+
+header {
+  background: #222;
+  color: white;
+  padding: 15px 20px;
+}
+
+header h1 {
+  margin: 0;
+}
+
+header p {
+  margin: 5px 0 0;
+}
+
+main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+section {
+  margin-bottom: 30px;
+}
+
+form {
+  margin-bottom: 10px;
+}
+
+input,
+select,
+button {
+  padding: 8px;
+  font-size: 15px;
+  margin: 3px 0;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* grid dos filmes, o auto-fill vai encaixando quantos cabem na tela */
+.lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 15px;
+}
+
+.card {
+  background: white;
+  border: 1px solid #ccc;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.card img {
+  width: 100%;
+}
+
+.card h3 {
+  font-size: 16px;
+  margin: 8px 0 4px;
+}
+
+.card p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* caixa dos detalhes do filme */
+#detalhes {
+  background: white;
+  border: 1px solid #ccc;
+  padding: 15px;
+}
+
+#detalhes img {
+  max-width: 200px;
+}
+
+footer {
+  background: #222;
+  color: white;
+  text-align: center;
+  padding: 15px;
+}
+
+footer p {
+  margin: 5px 0;
+}
+
+/* celular: 2 filmes por linha e os campos ocupando a largura toda */
+@media (max-width: 600px) {
+  .lista {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  input,
+  select,
+  button {
+    width: 100%;
+  }
+}
